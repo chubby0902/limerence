@@ -1,0 +1,28 @@
+/* 自定义样式 */
+.question-group {
+    transition: all 0.2s;
+  }
+  
+  .question-group:hover {
+    border-color: #818cf8;
+  }
+  
+  .option-label {
+    transition: all 0.2s;
+  }
+  
+  .option-label:hover {
+    background-color: #f5f3ff;
+  }
+  
+  input[type="radio"]:checked + span {
+    color: #4f46e5;
+  }
+  
+  input[type="radio"]:checked ~ span {
+    color: #4f46e5;
+  }
+  
+  #results-chart {
+    max-height: 250px;
+  }

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试结果 - Limerence 自测评估</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+      <h1 class="text-3xl font-bold text-center text-indigo-700 mb-6">你的测试结果</h1>
+      
+      <div id="results-container" class="space-y-6">
+        <!-- 结果将通过JavaScript动态生成 -->
+      </div>
+      
+      <div class="mt-8">
+        <a href="index.html" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 inline-block">重新测试</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const results = JSON.parse(localStorage.getItem('limerenceResults'));
+      const container = document.getElementById('results-container');
+      
+      if (!results) {
+        container.innerHTML = '<p class="text-red-500">未能找到测试结果，请重新测试。</p>';
+        return;
+      }
+      
+      // 显示总分和风险等级
+      container.innerHTML = `
+        <div class="p-4 bg-indigo-50 rounded-lg">
+          <h2 class="text-xl font-semibold mb-2">总体评估</h2>
+          <p class="mb-1"><span class="font-medium">总分:</span> ${results.totalScore}/75</p>
+          <p class="mb-1"><span class="font-medium">风险等级:</span> <span class="font-bold ${getRiskColor(results.riskLevel)}">${results.riskLevel}</span></p>
+          <p class="mt-2">${results.advice}</p>
+        </div>
+        
+        <div class="p-4 bg-white border rounded-lg">
+          <h2 class="text-xl font-semibold mb-4">各维度得分</h2>
+          <canvas id="resultsChart" height="200"></canvas>
+        </div>
+        
+        <div class="p-4 bg-indigo-50 rounded-lg">
+          <h2 class="text-xl font-semibold mb-2">建议</h2>
+          ${getDetailedAdvice(results.riskLevel, results.categoryScores)}
+        </div>
+      `;
+      
+      // 绘制图表
+      const ctx = document.getElementById('resultsChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(results.categoryScores),
+          datasets: [{
+            label: '得分',
+            data: Object.values(results.categoryScores),
+            backgroundColor: 'rgba(79, 70, 229, 0.6)',
+            borderColor: 'rgba(79, 70, 229, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 15
+            }
+          }
+        }
+      });
+    });
+    
+    function getRiskColor(riskLevel) {
+      const colors = {
+        "低风险": "text-green-600",
+        "中度风险": "text-yellow-600",
+        "高风险": "text-red-600"
+      };
+      return colors[riskLevel];
+    }
+    
+    function getDetailedAdvice(riskLevel, categoryScores) {
+      let advice = '';
+      
+      if (riskLevel === "高风险") {
+        advice += `<p class="mb-3">你表现出强烈的Limerence特征，这可能会影响你的日常生活和情感健康。建议考虑以下措施：</p>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>寻求心理咨询师或心理医生的专业帮助</li>
+                    <li>尝试减少与LO（迷恋对象）的接触</li>
+                    <li>培养新的兴趣爱好转移注意力</li>
+                    <li>练习正念冥想，减少侵入性思维</li>
+                  </ul>`;
+      } else if (riskLevel === "中度风险") {
+        advice += `<p class="mb-3">你表现出一些Limerence特征，需要关注但不必过度担忧。建议：</p>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>记录你的情感波动，观察模式</li>
+                    <li>设定与LO互动的界限</li>
+                    <li>扩大社交圈，认识新朋友</li>
+                    <li>保持健康的生活习惯</li>
+                  </ul>`;
+      } else {
+        advice += `<p class="mb-3">你的情感状态较为健康。继续保持：</p>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>平衡的情感生活</li>
+                    <li>健康的自我认知</li>
+                    <li>多样化的兴趣和社交</li>
+                  </ul>`;
+      }
+      
+      // 针对高分的特定维度给出建议
+      const highScoreCategories = Object.entries(categoryScores)
+        .filter(([_, score]) => score >= 12)
+        .map(([category]) => category);
+      
+      if (highScoreCategories.length > 0) {
+        advice += `<p class="mt-4 font-medium">特别注意以下方面：</p>`;
+        
+        highScoreCategories.forEach(category => {
+          if (category === "侵入性思维") {
+            advice += `<p class="mt-2"><span class="font-medium">侵入性思维:</span> 尝试"思维停止"技术，当注意到自己在想LO时，大声说"停"并转移注意力。</p>`;
+          } else if (category === "情感两极波动") {
+            advice += `<p class="mt-2"><span class="font-medium">情感两极波动:</span> 练习情绪调节技巧，如深呼吸或写日记记录情绪变化。</p>`;
+          }
+          // 其他类别的特定建议...
+        });
+      }
+      
+      return advice;
+    }
+  </script>
+</body>
+</html>

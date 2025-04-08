@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limerence 自测评估</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+  <div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+      <!-- 测试表单部分 -->
+      <div id="test-form" class="p-6">
+        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-6">Limerence 自测评估</h1>
+        
+        <form id="limerence-test" class="space-y-8">
+          <!-- 问题将通过JavaScript动态生成 -->
+          <div id="questions-container" class="space-y-8"></div>
+          
+          <div class="flex justify-center">
+            <button type="submit" class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+              提交测试
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- 结果展示部分（初始隐藏） -->
+      <div id="results-container" class="hidden p-6 border-t border-gray-200">
+        <h2 class="text-2xl font-bold text-center text-indigo-700 mb-6">你的测试结果</h2>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- 总分和风险等级 -->
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-3">总体评估</h3>
+            <p class="mb-2"><span class="font-medium">总分:</span> <span id="total-score" class="font-bold">0</span>/75</p>
+            <p class="mb-2"><span class="font-medium">风险等级:</span> <span id="risk-level" class="font-bold">-</span></p>
+            <p id="general-advice" class="mt-3"></p>
+          </div>
+          
+          <!-- 图表 -->
+          <div class="bg-white p-4 border rounded-lg">
+            <h3 class="text-xl font-semibold mb-3">各维度得分</h3>
+            <canvas id="results-chart" height="200"></canvas>
+          </div>
+        </div>
+        
+        <!-- 详细建议 -->
+        <div class="mt-6 bg-indigo-50 p-4 rounded-lg">
+          <h3 class="text-xl font-semibold mb-3">建议</h3>
+          <div id="detailed-advice"></div>
+        </div>
+        
+        <div class="mt-6 flex justify-center">
+          <button id="retake-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors">
+            重新测试
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
